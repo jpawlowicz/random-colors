@@ -60,7 +60,34 @@ navigator.clipboard.writeText(color);
 });
 return div;
 }
-      function generatePalette(mode) {
+function componentToHex(c) {
+  const hex = c.toString(16);
+  return hex.length == 1 ? '0' + hex : hex;
+}
+
+function rgbToHex(r, g, b) {
+  return '#' + componentToHex(r) + componentToHex(g) + componentToHex(b);
+}
+
+function rotateColor(color, degrees) {
+  const num = parseInt(color.slice(1), 16);
+  const amt = (Math.round(2.55 * degrees) << 24) | (~(0xff << 24));
+  const result = (num ^ amt) >>> 0;
+  return '#' + result.toString(16).padStart(6, '0');
+}
+
+function createColorDiv(color) {
+  const div = document.createElement('div');
+  div.className = 'color bg-gradient-to-br from-transparent to-black p-2 rounded-md';
+  div.style.backgroundColor = color;
+  div.innerHTML = `<p class="text-white text-xs font-semibold">${color}</p>`;
+  div.addEventListener('click', () => {
+    navigator.clipboard.writeText(color);
+  });
+  return div;
+}
+
+function generatePalette(mode) {
   const baseColor = document.getElementById('base-color').value;
   const container = document.querySelector('.grid');
   container.innerHTML = '';
@@ -99,6 +126,10 @@ return div;
     container.appendChild(colorDiv);
   }
 }
+
+document.getElementById('base-color').addEventListener('input', () => generatePalette('primary'));
+generatePalette('primary');
+
   </script>
 </body>
 </html>
